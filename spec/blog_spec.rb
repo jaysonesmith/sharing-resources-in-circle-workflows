@@ -10,9 +10,10 @@ describe Blog do
     end
 
     describe '.get' do
-        it 'gets the url and returns the body' do
+        it 'makes a get request for the set url' do
             blog = Blog.new('https://jayson.codes')
-            expect(blog.get).to eq File.read('./fixtures/blog.html')
+            expect(FARADAY).to receive(:get).with('https://jayson.codes')
+            blog.get
         end
     end
 end

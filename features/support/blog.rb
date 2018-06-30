@@ -1,11 +1,11 @@
 class Blog
-    attr_reader :url
+    attr_reader :url, :resp, :body
 
     def initialize(url)
         @url = url
     end
 
     def get
-        FARADAY.get(url).body
+        resp = FARADAY.get(url)
     end
 end
