@@ -16,4 +16,12 @@ describe Blog do
             blog.get
         end
     end
+
+    describe '.title' do
+        it 'returns the title if any is found in a saved response' do
+            blog = Blog.new('https://jayson.codes')
+            blog.get
+            expect(blog.title).to eq 'jayson.codes'
+        end
+    end
 end
