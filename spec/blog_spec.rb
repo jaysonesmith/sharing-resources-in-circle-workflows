@@ -8,4 +8,11 @@ describe Blog do
             expect(blog.url).to eq 'https://jayson.codes'
         end
     end
+
+    describe '.get' do
+        it 'gets the url and returns the body' do
+            blog = Blog.new('https://jayson.codes')
+            expect(blog.get).to eq File.read('./fixtures/blog.html')
+        end
+    end
 end

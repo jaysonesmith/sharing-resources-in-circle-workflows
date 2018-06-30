@@ -4,4 +4,8 @@ class Blog
     def initialize(url)
         @url = url
     end
+
+    def get
+        FARADAY.get(url).body
+    end
 end
