@@ -1,7 +1,8 @@
 When("my blog is requested") do
-    pending
+    @blog = Blog.new('https://jayson.codes')
+    @blog.get
 end
 
 Then("the title must be {string}") do |expected_title|
-    pending
+    expect(@blog.title).to eq 'jayson.codes'
 end
