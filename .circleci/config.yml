@@ -2,7 +2,7 @@ version: 2
 
 aliases:
     - &restore_gem_cache
-        name: Saving gem cache
+        name: Restoring gem cache
         key: v1-gemfile-{{ checksum "Gemfile.lock" }}
 
     - &save_gem_cache
