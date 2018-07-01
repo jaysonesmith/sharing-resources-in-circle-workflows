@@ -2,46 +2,68 @@ version: 2
 
 aliases:
     - &restore_gem_cache
-        keys: 
-            - v1-gemfile-{{ checksum "Gemfile.lock" }}
+        name: Saving gem cache
+        key: v1-gemfile-{{ checksum "Gemfile.lock" }}
 
     - &save_gem_cache
         name: Saving gem cache
         key: v1-gemfile-{{ checksum "Gemfile.lock" }}
         paths: 
             - ~/data/vendor/bundle
-    
+
     - &bundle_install
         name: Install Gems
         command: bundle install --path=vendor/bundle --jobs=4 --retry=3
 
 defaults: &defaults
-  docker: 
-    - image: ruby:2.5.1
-  working_directory: ~/data
+    docker: 
+        - image: ruby:2.5.1
+    working_directory: ~/data
 
 jobs:
-  rspec:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache: *restore_gem_cache
-      - run: *bundle_install
-      - save_cache: *save_gem_cache
-      - run: bundle exec rspec
+    bundle_dependencies:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/data
+            - restore_cache: *restore_gem_cache
+            - run: *bundle_install
+            - save_cache: *save_gem_cache
+            - persist_to_workspace:
+                root: .
+                paths:
+                    - vendor/bundle
+    rspec:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/data
+            - restore_cache: *restore_gem_cache
+            - run: *bundle_install
+            - save_cache: *save_gem_cache
+            - run: bundle exec rspec
 
-  cucumber:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache: *restore_gem_cache
-      - run: *bundle_install
-      - save_cache: *save_gem_cache
-      - run: bundle exec cucumber
+    cucumber:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/data
+            - restore_cache: *restore_gem_cache
+            - run: *bundle_install
+            - save_cache: *save_gem_cache
+            - run: bundle exec cucumber
 
 workflows:
     version: 2
     pr:
         jobs:
-            - rspec
-            - cucumber
+            - bundle_dependencies
+            - rspec:
+                requires:
+                    - bundle_dependencies
+            - cucumber:
+                requires:
+                    - bundle_dependencies
